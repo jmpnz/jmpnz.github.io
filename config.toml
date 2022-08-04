@@ -1,6 +1,6 @@
 baseURL = 'https://jmpnz.github.io/'
 languageCode = 'en-us'
-title = "Avoiding Catastrophes One Deployment at a Time"
+title = "Causing Catastrophes One Deployment at a Time"
 theme = "cactus"
 copyright = "jmpnz" # cactus will use title if copyright is not set
 
@@ -50,7 +50,7 @@ weight = 4
   mainSection = "posts" # your main section
   showAllPostsOnHomePage = false # default
   postsOnHomePage = 5 # this option will be ignored if showAllPostsOnHomePage is set to true
-  tagsOverview = false # show tags overview by default.
+  tagsOverview = true # show tags overview by default.
   showProjectsList = false # show projects list by default (if projects data file exists).
   projectsUrl = "https://github.com/jmpnz" # title link for projects list
 

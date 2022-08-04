@@ -1,6 +1,11 @@
 ---
 title: "Musings with SIMD on an M1"
-date: 2022-08-04T01:31:54+01:00
+date: 2022-08-04
+tags:
+  - macOS
+  - ARM
+  - Neon
+draft: true
 ---
 
 # I have an M1 now what ?
