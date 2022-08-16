@@ -1,5 +1,5 @@
 ---
-title: "Welcome"
+title: "Le Blog Est Mort ! Vive Le Blog"
 date: 2022-08-04T22:25:30+01:00
 ---
 
