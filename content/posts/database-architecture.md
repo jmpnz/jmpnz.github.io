@@ -1,6 +1,6 @@
 ---
 title: "Architecture of a DBMS (Part 1)"
-date: 2022-08-04
+date: 2022-10-18
 ---
 
 # Architecture of a Database Management System
