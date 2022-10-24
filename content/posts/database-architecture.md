@@ -19,17 +19,24 @@ that will be left to a following post.
 
 All major OLTP databases store data on-disk, when we refer to disk storage we will often use the
 term *block device*. Modern operating systems often abstract away the hardware disk (HDD or SSD)
-using a file system. File systems are central to how the OS deals with the hardware.
+using the block device abstraction. The block device abstraction is essentially a guarrentee
+by the operating system that the underlying hardware can be treated as a sequence of blocks.
 
-For example a file can be seen as a sequence of bytes, all file metadata (name, size, status) is
-handled separately by the file system. In Unix systems you can interact with files using syscalls
-such as `open`, `read` or `write`. How the file is opened and when the data is written belongs
-to the realm of the kernel. Most programming languages abstract the syscalls around their standard
-libraries. In C++ for example you will often be dealing with `std::fstream` in Go there's `os.File`.
+Every block is a fixed-size chunck of bytes, and while the programmer might usually interact
+with the storage device reading or writing a few bytes at the time, the operating system will
+always interact with the storage device in terms of blocks.
 
-Most database systems implement some sort of storage manager that abstracts away the underlying
-resource handles `os.File` or `std::fstream` to provide a thread-safe API or to implement their
-own buffered IO.
+In Unix systems for example you can interact with files using syscalls such as `open`, `read` or `write`.
+While the `read`/`write` API accept arbitrary number of bytes the contents of the data you read
+or write will almost always exist in the Kernel in-memory buffer and/or the file system cache
+before it lands on disk.
+
+Programming languages abstract the syscalls around their standard libraries, in C++ for example
+you will often be dealing with `std::fstream` in Go there's `os.File`.
+
+Database systems often implement some sort of storage manager that abstracts away the underlying
+resource handles `os.File` or `std::fstream` or `FILE*` to provide a thread-safe API or to implement their
+own form of buffered IO that is independant of the kernel.
 
 You can see PostgreSQL implementation [here](https://github.com/postgres/postgres/tree/master/src/backend/storage/smgr).
 
