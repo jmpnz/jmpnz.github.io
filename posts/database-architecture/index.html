@@ -15,13 +15,16 @@ device) in memory. Because of how lengthy the post might end up I will leave ref
 for readers who would like a deeper dive into the subject.</p><p>This part on storage management won&rsquo;t deal with indexing mechanisms and external memory data structures
 that will be left to a following post.</p><h2 id=managing-files>Managing Files</h2><p>All major OLTP databases store data on-disk, when we refer to disk storage we will often use the
 term <em>block device</em>. Modern operating systems often abstract away the hardware disk (HDD or SSD)
-using a file system. File systems are central to how the OS deals with the hardware.</p><p>For example a file can be seen as a sequence of bytes, all file metadata (name, size, status) is
-handled separately by the file system. In Unix systems you can interact with files using syscalls
-such as <code>open</code>, <code>read</code> or <code>write</code>. How the file is opened and when the data is written belongs
-to the realm of the kernel. Most programming languages abstract the syscalls around their standard
-libraries. In C++ for example you will often be dealing with <code>std::fstream</code> in Go there&rsquo;s <code>os.File</code>.</p><p>Most database systems implement some sort of storage manager that abstracts away the underlying
-resource handles <code>os.File</code> or <code>std::fstream</code> to provide a thread-safe API or to implement their
-own buffered IO.</p><p>You can see PostgreSQL implementation <a href=https://github.com/postgres/postgres/tree/master/src/backend/storage/smgr>here</a>.</p><p>Implementing a storage manager is not that difficult, the idea is to keep a hashmap that maps files
+using the block device abstraction. The block device abstraction is essentially a guarrentee
+by the operating system that the underlying hardware can be treated as a sequence of blocks.</p><p>Every block is a fixed-size chunck of bytes, and while the programmer might usually interact
+with the storage device reading or writing a few bytes at the time, the operating system will
+always interact with the storage device in terms of blocks.</p><p>In Unix systems for example you can interact with files using syscalls such as <code>open</code>, <code>read</code> or <code>write</code>.
+While the <code>read</code>/<code>write</code> API accept arbitrary number of bytes the contents of the data you read
+or write will almost always exist in the Kernel in-memory buffer and/or the file system cache
+before it lands on disk.</p><p>Programming languages abstract the syscalls around their standard libraries, in C++ for example
+you will often be dealing with <code>std::fstream</code> in Go there&rsquo;s <code>os.File</code>.</p><p>Database systems often implement some sort of storage manager that abstracts away the underlying
+resource handles <code>os.File</code> or <code>std::fstream</code> or <code>FILE*</code> to provide a thread-safe API or to implement their
+own form of buffered IO that is independant of the kernel.</p><p>You can see PostgreSQL implementation <a href=https://github.com/postgres/postgres/tree/master/src/backend/storage/smgr>here</a>.</p><p>Implementing a storage manager is not that difficult, the idea is to keep a hashmap that maps files
 by their names to the underlying resource handle.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1</span><span>
 </span></span><span style=display:flex><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2</span><span><span style=color:#8be9fd;font-style:italic>type</span> StorageManager <span style=color:#8be9fd;font-style:italic>interface</span> {
 </span></span><span style=display:flex><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3</span><span>  <span style=color:#50fa7b>Open</span>(filename <span style=color:#8be9fd>string</span>) <span style=color:#ff79c6>*</span>os.File
